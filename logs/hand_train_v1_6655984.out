@@ -1,0 +1,6 @@
+conda version 25.3.0 python 3.12.7 loaded.
+
+EnvironmentNameNotFound: Could not find conda environment: hand_env
+You can list all discoverable environments with `conda info --envs`.
+
+

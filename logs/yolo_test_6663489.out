@@ -1,0 +1,12 @@
+conda version 25.3.0 python 3.12.7 loaded.
+Node: x1001c1s2b0n1
+GPU: NVIDIA A100-SXM4-40GB
+Traceback (most recent call last):
+  File "/geode2/home/u100/veravi/BigRed200/infanthands/test_yolo.py", line 13, in <module>
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+  File "<frozen os>", line 215, in makedirs
+  File "<frozen os>", line 215, in makedirs
+  File "<frozen os>", line 225, in makedirs
+PermissionError: [Errno 13] Permission denied: '/scratch'
+srun: error: nid0694: task 0: Exited with exit code 1
+srun: Terminating StepId=6663489.0

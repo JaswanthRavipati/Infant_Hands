@@ -1,0 +1,13 @@
+conda version 25.3.0 python 3.12.7 loaded.
+Node: x1000c0s5b0n1
+GPU: NVIDIA A100-SXM4-40GB
+===== SYSTEM INFO =====
+CUDA Available: True
+GPU: NVIDIA A100-SXM4-40GB
+
+Loading model...
+
+Running inference on videos...
+
+✅ Done!
+📂 Output: /N/slate/veravi/yolo_output/video_results

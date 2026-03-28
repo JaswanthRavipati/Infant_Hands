@@ -1,0 +1,40 @@
+conda version 25.3.0 python 3.12.7 loaded.
+Node: x1000c0s5b0n1
+GPU: NVIDIA A100-SXM4-40GB
+===== SYSTEM INFO =====
+CUDA Available: True
+GPU: NVIDIA A100-SXM4-40GB
+
+Loading model...
+Traceback (most recent call last):
+  File "/geode2/home/u100/veravi/BigRed200/infanthands/test_yolo.py", line 34, in <module>
+    model = YOLO(MODEL_PATH)
+            ^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/models/yolo/model.py", line 76, in __init__
+    super().__init__(model=model, task=task, verbose=verbose)
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/engine/model.py", line 144, in __init__
+    self._load(model, task=task)
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/engine/model.py", line 283, in _load
+    self.model, self.ckpt = load_checkpoint(weights)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/nn/tasks.py", line 1515, in load_checkpoint
+    ckpt, weight = torch_safe_load(weight)  # load ckpt
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/nn/tasks.py", line 1463, in torch_safe_load
+    ckpt = torch_load(file, map_location="cpu")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/utils/patches.py", line 178, in torch_load
+    return torch.load(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/torch/serialization.py", line 1500, in load
+    with _open_file_like(f, "rb") as opened_file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/torch/serialization.py", line 768, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/torch/serialization.py", line 749, in __init__
+    super().__init__(open(name, mode))  # noqa: SIM115
+                     ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/N/u/veravi/BigRed200/infanthands/runs/train5/weights/best.pt'
+srun: error: nid0652: task 0: Exited with exit code 1
+srun: Terminating StepId=6660817.0

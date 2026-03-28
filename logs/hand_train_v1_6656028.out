@@ -1,0 +1,44 @@
+conda version 25.3.0 python 3.12.7 unloaded.
+conda version 25.3.0 python 3.12.7 loaded.
+Node: x1001c1s7b0n0
+GPU: NVIDIA A100-SXM4-40GB
+Time: Thu Mar 19 01:54:07 AM EDT 2026
+WARNING ⚠️ user config directory '/N/u/veravi/BigRed200/.config/Ultralytics' is not writable, using '/tmp/Ultralytics'. Set YOLO_CONFIG_DIR to override.
+Creating new Ultralytics Settings v0.0.6 file ✅ 
+View Ultralytics Settings with 'yolo settings' or at '/tmp/Ultralytics/settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8m.pt to 'yolov8m.pt': 27% ━━━───────── 13.6/49.7MB 136.2MB/s 0.1s<0.3s[KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8m.pt to 'yolov8m.pt': 100% ━━━━━━━━━━━━ 49.7MB 248.4MB/s 0.2s
+
+===== Epoch 1 =====
+Ultralytics 8.4.23 🚀 Python-3.11.15 torch-2.10.0+cu128 CPU (AMD EPYC 7713 64-Core Processor)
+[34m[1mengine/trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=16, bgr=0.0, box=7.5, cache=False, cfg=None, classes=None, close_mosaic=10, cls=0.5, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=/N/slate/veravi/dataset/dataset.yaml, degrees=0.0, deterministic=True, device=cpu, dfl=1.5, dnn=False, dropout=0.0, dynamic=False, embed=None, end2end=None, epochs=1, erasing=0.4, exist_ok=False, fliplr=0.5, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, half=False, hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, imgsz=640, int8=False, iou=0.7, keras=False, kobj=1.0, line_width=None, lr0=0.01, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=yolov8m.pt, momentum=0.937, mosaic=1.0, multi_scale=0.0, name=train, nbs=64, nms=False, opset=None, optimize=False, optimizer=auto, overlap_mask=True, patience=100, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=None, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=/geode2/home/u100/veravi/BigRed200/infanthands/runs/detect/train, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.5, seed=0, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=botsort.yaml, translate=0.1, val=True, verbose=False, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0005, workers=8, workspace=None
+
+Traceback (most recent call last):
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/engine/trainer.py", line 691, in get_dataset
+    data = check_det_dataset(self.args.data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/data/utils.py", line 477, in check_det_dataset
+    raise FileNotFoundError(m)
+FileNotFoundError: Dataset '/N/slate/veravi/dataset/dataset.yaml' images not found, missing path '/Volumes/Seagate/CSCI_B657/data/dataset/images/val'
+Note dataset download directory is '/geode2/home/u100/veravi/BigRed200/infanthands/datasets'. You can update this in '/tmp/Ultralytics/settings.json'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/geode2/home/u100/veravi/BigRed200/infanthands/train_yolo.py", line 27, in <module>
+    results = model.train(
+              ^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/engine/model.py", line 772, in train
+    self.trainer = (trainer or self._smart_load("trainer"))(overrides=args, _callbacks=self.callbacks)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/models/yolo/detect/train.py", line 63, in __init__
+    super().__init__(cfg, overrides, _callbacks)
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/engine/trainer.py", line 186, in __init__
+    self.data = self.get_dataset()
+                ^^^^^^^^^^^^^^^^^^
+  File "/N/u/veravi/BigRed200/.conda/envs/hand_env/lib/python3.11/site-packages/ultralytics/engine/trainer.py", line 695, in get_dataset
+    raise RuntimeError(emojis(f"Dataset '{clean_url(self.args.data)}' error ❌ {e}")) from e
+RuntimeError: Dataset '/N/slate/veravi/dataset/dataset.yaml' error ❌ Dataset '/N/slate/veravi/dataset/dataset.yaml' images not found, missing path '/Volumes/Seagate/CSCI_B657/data/dataset/images/val'
+Note dataset download directory is '/geode2/home/u100/veravi/BigRed200/infanthands/datasets'. You can update this in '/tmp/Ultralytics/settings.json'
+srun: error: nid0703: task 0: Exited with exit code 1
+srun: Terminating StepId=6656028.0

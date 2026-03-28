@@ -1,0 +1,8 @@
+conda version 25.3.0 python 3.12.7 unloaded.
+conda version 25.3.0 python 3.12.7 loaded.
+Node: x1001c1s7b0n0
+GPU: NVIDIA A100-SXM4-40GB
+Time: Thu Mar 19 01:52:42 AM EDT 2026
+/N/u/veravi/BigRed200/.conda/envs/hand_env/bin/python: can't open file '/geode2/home/u100/veravi/BigRed200/infanthands/train.py': [Errno 2] No such file or directory
+srun: error: nid0703: task 0: Exited with exit code 2
+srun: Terminating StepId=6656026.0
