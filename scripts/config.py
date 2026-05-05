@@ -89,3 +89,9 @@ CROP_RESIZE = 224
 
 SPLIT_RATIO = 0.8
 SPLIT_SEED = 42
+
+# -----------------------------
+# DINO CLASSIFICATION
+# -----------------------------
+DINO_THRESHOLD = 0.4
+CROP_RESIZE_DINO=518
