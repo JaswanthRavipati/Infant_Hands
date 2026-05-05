@@ -1,38 +1,61 @@
 import os
+import random
 import shutil
-import logging
-from config import (
-    DATASET_IMAGES_TRAIN, DATASET_LABELS_TRAIN,
-    DATASET_IMAGES_TRAIN_SPLIT, DATASET_IMAGES_VAL,
-    DATASET_LABELS_TRAIN_SPLIT, DATASET_LABELS_VAL,
-)
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-log = logging.getLogger(__name__)
+# -----------------------------
+# PATHS
+# -----------------------------
 
-# Day-stratified split: Day 3 of every subject goes to val, Days 1+2 go to train.
-# This tests generalization across time while keeping all subjects represented in val.
-VAL_DAY = "day3"
+BASE_PATH = "/Volumes/Seagate/CSCI_B657/data/dataset"
 
-log.info("Val day: %s | Train days: day1, day2", VAL_DAY)
+IMAGES_PATH = os.path.join(BASE_PATH, "images/train")
+LABELS_PATH = os.path.join(BASE_PATH, "labels/train")
 
-for p in [DATASET_IMAGES_TRAIN_SPLIT, DATASET_IMAGES_VAL,
-          DATASET_LABELS_TRAIN_SPLIT, DATASET_LABELS_VAL]:
+TRAIN_IMG = os.path.join(BASE_PATH, "images/train_split")
+VAL_IMG = os.path.join(BASE_PATH, "images/val")
+
+TRAIN_LBL = os.path.join(BASE_PATH, "labels/train_split")
+VAL_LBL = os.path.join(BASE_PATH, "labels/val")
+
+# -----------------------------
+# SETTINGS
+# -----------------------------
+
+SPLIT_RATIO = 0.8
+SEED = 42
+
+# -----------------------------
+# CREATE FOLDERS
+# -----------------------------
+
+for p in [TRAIN_IMG, VAL_IMG, TRAIN_LBL, VAL_LBL]:
     os.makedirs(p, exist_ok=True)
 
-images = [f for f in os.listdir(DATASET_IMAGES_TRAIN) if f.endswith(".jpg")]
+# -----------------------------
+# GET IMAGES
+# -----------------------------
 
-# Filenames are: {subject}_day{N}_{frame}.jpg
-val_files   = [f for f in images if f"_{VAL_DAY}_" in f]
-train_files = [f for f in images if f"_{VAL_DAY}_" not in f]
+images = [f for f in os.listdir(IMAGES_PATH) if f.endswith(".jpg")]
 
-log.info("Total: %d | Train: %d | Val: %d", len(images), len(train_files), len(val_files))
+random.seed(SEED)
+random.shuffle(images)
 
+split_idx = int(SPLIT_RATIO * len(images))
+
+train_files = images[:split_idx]
+val_files = images[split_idx:]
+
+print(f"Total: {len(images)}")
+print(f"Train: {len(train_files)} | Val: {len(val_files)}")
+
+# -----------------------------
+# COPY FUNCTION
+# -----------------------------
 
 def copy_files(file_list, img_dest, lbl_dest):
     for file in file_list:
-        img_src = os.path.join(DATASET_IMAGES_TRAIN, file)
-        lbl_src = os.path.join(DATASET_LABELS_TRAIN, file.replace(".jpg", ".txt"))
+        img_src = os.path.join(IMAGES_PATH, file)
+        lbl_src = os.path.join(LABELS_PATH, file.replace(".jpg", ".txt"))
 
         shutil.copy(img_src, os.path.join(img_dest, file))
 
@@ -41,11 +64,13 @@ def copy_files(file_list, img_dest, lbl_dest):
         if os.path.exists(lbl_src):
             shutil.copy(lbl_src, label_dest)
         else:
-            with open(label_dest, "w"):
-                pass
+            open(label_dest, "w").close()
 
+# -----------------------------
+# EXECUTE SPLIT
+# -----------------------------
 
-copy_files(train_files, DATASET_IMAGES_TRAIN_SPLIT, DATASET_LABELS_TRAIN_SPLIT)
-copy_files(val_files, DATASET_IMAGES_VAL, DATASET_LABELS_VAL)
+copy_files(train_files, TRAIN_IMG, TRAIN_LBL)
+copy_files(val_files, VAL_IMG, VAL_LBL)
 
-log.info("Split completed")
+print("Split completed")

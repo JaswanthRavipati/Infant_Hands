@@ -1,22 +1,20 @@
 import os
-import logging
-from config import DATASET_LABELS_TRAIN
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-log = logging.getLogger(__name__)
+LABELS_DIR = "/Volumes/Seagate/CSCI_B657/data/dataset/labels/train"
 
-for file in os.listdir(DATASET_LABELS_TRAIN):
+for file in os.listdir(LABELS_DIR):
     if not file.endswith(".txt"):
         continue
 
-    path = os.path.join(DATASET_LABELS_TRAIN, file)
+    path = os.path.join(LABELS_DIR, file)
 
     with open(path, "r") as f:
         lines = f.readlines()
 
-    unique_lines = list(dict.fromkeys(lines))  # order-preserving dedup
+    # remove duplicates
+    unique_lines = list(set(lines))
 
     with open(path, "w") as f:
         f.writelines(unique_lines)
 
-log.info("Duplicate boxes removed")
+print("Duplicate boxes removed")

@@ -2,41 +2,66 @@
 
 import os
 import cv2
-import logging
 from ultralytics import YOLO
-from config import (
-    DATA_ROOT, SUBJECTS, TRAIN_DAYS, YOLO_WEIGHTS,
-    HAND_CROP_DIR, CONF_THRESHOLD, CROP_PADDING, CROP_MIN_SIZE, CROP_RESIZE
-)
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-log = logging.getLogger(__name__)
+# -----------------------------
+# SETTINGS
+# -----------------------------
 
-log.info("=== STARTING MULTI-SUBJECT CROP GENERATION ===")
+ROOT = "/Volumes/Seagate/CSCI_B657/data"
 
-os.makedirs(HAND_CROP_DIR, exist_ok=True)
+SUBJECTS = [25131, 25138, 25176, 25190, 25602]
+DAYS = [1, 2, 3]
 
-log.info("Loading YOLO...")
+YOLO_WEIGHTS = "/Volumes/Seagate/CSCI_B657/data/best.pt"
+
+OUTPUT_DIR = "/Volumes/Seagate/CSCI_B657/data/hand_crops"
+
+CONF_THRESHOLD = 0.25
+PADDING = 20
+
+# -----------------------------
+# SETUP
+# -----------------------------
+
+print("=== STARTING MULTI-SUBJECT CROP GENERATION ===", flush=True)
+
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+print("Loading YOLO...", flush=True)
 model = YOLO(YOLO_WEIGHTS)
-log.info("YOLO loaded!")
+print("YOLO loaded!", flush=True)
 
 total_frames = 0
 total_crops = 0
 
-for subject in SUBJECTS:
-    for day in TRAIN_DAYS:
+# -----------------------------
+# MAIN LOOP
+# -----------------------------
 
-        frames_folder = f"{DATA_ROOT}/{subject}/frames/day{day}"
+MAX_CROPS_PER_VIDEO = 200
+
+for subject in SUBJECTS:
+    for day in DAYS:
+
+        frames_folder = f"{ROOT}/{subject}/frames/day{day}"
 
         if not os.path.exists(frames_folder):
-            log.warning("Skipping missing folder: %s", frames_folder)
+            print(f"Skipping missing folder: {frames_folder}", flush=True)
             continue
 
-        log.info("Processing Subject %s Day %s", subject, day)
+        print(f"Processing Subject {subject} Day {day}", flush=True)
 
         frame_files = sorted(os.listdir(frames_folder))
 
+        crops_per_video = 0   # 🔥 reset for each video
+
         for frame_file in frame_files:
+
+            # 🔴 Stop if limit reached
+            if crops_per_video >= MAX_CROPS_PER_VIDEO:
+                print(f"Reached {MAX_CROPS_PER_VIDEO} crops → moving to next video", flush=True)
+                break
 
             if not frame_file.endswith(".jpg"):
                 continue
@@ -51,8 +76,9 @@ for subject in SUBJECTS:
             total_frames += 1
 
             if total_frames % 200 == 0:
-                log.info("Frames: %d, Crops: %d", total_frames, total_crops)
+                print(f"Frames: {total_frames}, Total Crops: {total_crops}", flush=True)
 
+            # -------- YOLO DETECTION --------
             results = model(img, conf=CONF_THRESHOLD, verbose=False)[0]
 
             if results.boxes is None:
@@ -60,27 +86,44 @@ for subject in SUBJECTS:
 
             for i, box in enumerate(results.boxes.xyxy):
 
+                # 🔴 Stop inside detection loop also
+                if crops_per_video >= MAX_CROPS_PER_VIDEO:
+                    break
+
                 x1, y1, x2, y2 = map(int, box)
 
-                x1 = max(0, x1 - CROP_PADDING)
-                y1 = max(0, y1 - CROP_PADDING)
-                x2 = min(width, x2 + CROP_PADDING)
-                y2 = min(height, y2 + CROP_PADDING)
+                # Padding
+                x1 = max(0, x1 - PADDING)
+                y1 = max(0, y1 - PADDING)
+                x2 = min(width, x2 + PADDING)
+                y2 = min(height, y2 + PADDING)
 
                 crop = img[y1:y2, x1:x2]
 
                 if crop.size == 0:
                     continue
 
-                if (x2 - x1) < CROP_MIN_SIZE or (y2 - y1) < CROP_MIN_SIZE:
+                # Filter small boxes
+                if (x2 - x1) < 50 or (y2 - y1) < 50:
                     continue
 
-                crop = cv2.resize(crop, (CROP_RESIZE, CROP_RESIZE))
+                # Resize for CNN
+                crop = cv2.resize(crop, (224, 224))
 
+                # Save crop
                 crop_name = f"{subject}_day{day}_{frame_file.replace('.jpg','')}_h{i}.jpg"
-                cv2.imwrite(os.path.join(HAND_CROP_DIR, crop_name), crop)
-                total_crops += 1
+                save_path = os.path.join(OUTPUT_DIR, crop_name)
 
-log.info("Total frames processed: %d", total_frames)
-log.info("Total crops saved: %d", total_crops)
-log.info("Saved at: %s", HAND_CROP_DIR)
+                cv2.imwrite(save_path, crop)
+
+                total_crops += 1
+                crops_per_video += 1
+                
+# -----------------------------
+# RESULTS
+# -----------------------------
+
+print("================================", flush=True)
+print("Total frames processed:", total_frames, flush=True)
+print("Total crops saved:", total_crops, flush=True)
+print("Saved at:", OUTPUT_DIR, flush=True)

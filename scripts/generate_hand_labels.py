@@ -1,18 +1,25 @@
 import cv2
 import mediapipe as mp
 import os
-import logging
-from config import (
-    DATA_ROOT, SUBJECTS, TRAIN_DAYS,
-    DATASET_IMAGES_TRAIN, DATASET_LABELS_TRAIN,
-    MP_MAX_HANDS, MP_MIN_DETECTION_CONF
-)
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-log = logging.getLogger(__name__)
+# -----------------------------
+# SETTINGS
+# -----------------------------
 
-os.makedirs(DATASET_IMAGES_TRAIN, exist_ok=True)
-os.makedirs(DATASET_LABELS_TRAIN, exist_ok=True)
+ROOT = "/Volumes/Seagate/CSCI_B657/data"
+
+SUBJECTS = [25131, 25138, 25176, 25190, 25602]
+TRAIN_DAYS = [1, 2, 3]
+
+IMAGE_OUTPUT = f"{ROOT}/dataset/images/train"
+LABEL_OUTPUT = f"{ROOT}/dataset/labels/train"
+
+os.makedirs(IMAGE_OUTPUT, exist_ok=True)
+os.makedirs(LABEL_OUTPUT, exist_ok=True)
+
+# -----------------------------
+# MEDIAPIPE SETUP
+# -----------------------------
 
 mp_hands = mp.solutions.hands
 
@@ -21,22 +28,22 @@ boxes_created = 0
 
 with mp_hands.Hands(
         static_image_mode=True,
-        max_num_hands=MP_MAX_HANDS,
-        min_detection_confidence=MP_MIN_DETECTION_CONF
+        max_num_hands=2,
+        min_detection_confidence=0.4
 ) as hands:
 
     for subject in SUBJECTS:
         for day in TRAIN_DAYS:
 
-            input_folder = f"{DATA_ROOT}/{subject}/hand_frames/day{day}"
+            input_folder = f"{ROOT}/{subject}/hand_frames/day{day}"
 
             if not os.path.exists(input_folder):
-                log.warning("Missing folder: %s", input_folder)
+                print("Missing folder:", input_folder)
                 continue
 
-            log.info("Processing Subject %s Day %s", subject, day)
+            print(f"Processing Subject {subject} Day {day}")
 
-            for file in sorted(os.listdir(input_folder)):
+            for file in os.listdir(input_folder):
 
                 if not file.endswith(".jpg"):
                     continue
@@ -52,12 +59,14 @@ with mp_hands.Hands(
 
                 results = hands.process(rgb)
 
+                # 🔥 UNIQUE filename (important to avoid overwrite)
                 new_name = f"{subject}_day{day}_{file}"
 
-                cv2.imwrite(os.path.join(DATASET_IMAGES_TRAIN, new_name), img)
+                # copy image
+                cv2.imwrite(os.path.join(IMAGE_OUTPUT, new_name), img)
 
                 label_path = os.path.join(
-                    DATASET_LABELS_TRAIN,
+                    LABEL_OUTPUT,
                     new_name.replace(".jpg", ".txt")
                 )
 
@@ -69,26 +78,29 @@ with mp_hands.Hands(
 
                     for hand_landmarks in results.multi_hand_landmarks:
 
-                        xs = [lm.x for lm in hand_landmarks.landmark]
-                        ys = [lm.y for lm in hand_landmarks.landmark]
+                        xs = []
+                        ys = []
 
-                        x_min, x_max = max(0.0, min(xs)), min(1.0, max(xs))
-                        y_min, y_max = max(0.0, min(ys)), min(1.0, max(ys))
+                        for lm in hand_landmarks.landmark:
+                            xs.append(lm.x)
+                            ys.append(lm.y)
+
+                        x_min = min(xs)
+                        x_max = max(xs)
+                        y_min = min(ys)
+                        y_max = max(ys)
 
                         x_center = (x_min + x_max) / 2
                         y_center = (y_min + y_max) / 2
                         box_width = x_max - x_min
                         box_height = y_max - y_min
 
-                        if box_width <= 0 or box_height <= 0:
-                            continue
-
-                        f.write(f"0 {x_center:.6f} {y_center:.6f} {box_width:.6f} {box_height:.6f}\n")
+                        f.write(f"0 {x_center} {y_center} {box_width} {box_height}\n")
 
                         boxes_created += 1
 
                 images_processed += 1
 
-log.info("Images processed: %d", images_processed)
-log.info("Bounding boxes created: %d", boxes_created)
-log.info("Dataset ready for YOLO training")
+print("Images processed:", images_processed)
+print("Bounding boxes created:", boxes_created)
+print("Dataset ready for YOLO training")

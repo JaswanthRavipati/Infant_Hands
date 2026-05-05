@@ -2,14 +2,18 @@ import pandas as pd
 import cv2
 import mediapipe as mp
 import os
-import logging
-from config import (
-    CSV_FILE, DATA_ROOT, SUBJECTS, TRAIN_DAYS, TARGET_FPS,
-    MP_MAX_HANDS, MP_MIN_DETECTION_CONF
-)
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-log = logging.getLogger(__name__)
+# -----------------------------
+# SETTINGS
+# -----------------------------
+
+CSV_FILE = "/Volumes/Seagate/CSCI_B657/csv/Spatial_Master_5_subjects.csv"
+ROOT = "/Volumes/Seagate/CSCI_B657/data"
+
+SUBJECTS = [25131, 25138, 25176, 25190, 25602]
+TRAIN_DAYS = [1, 2, 3]
+
+FPS = 5
 
 # -----------------------------
 # LOAD CSV
@@ -18,18 +22,18 @@ log = logging.getLogger(__name__)
 df = pd.read_csv(CSV_FILE)
 df.columns = df.columns.str.strip()
 
-log.info("Columns: %s", list(df.columns))
+print("Columns:", df.columns)
 
 df = df[(df["subject"].isin(SUBJECTS)) & (df["day"].isin(TRAIN_DAYS))]
 
-log.info("Rows after filtering: %d", len(df))
+print("Rows after filtering:", len(df))
 
 # -----------------------------
 # CONVERT TIMESTAMPS → FRAMES
 # -----------------------------
 
-df["start_frame"] = (df["onset"] / 1000 * TARGET_FPS).astype(int)
-df["end_frame"] = (df["offset"] / 1000 * TARGET_FPS).astype(int)
+df["start_frame"] = (df["onset"] / 1000 * FPS).astype(int)
+df["end_frame"] = (df["offset"] / 1000 * FPS).astype(int)
 
 # -----------------------------
 # MEDIAPIPE SETUP
@@ -46,24 +50,23 @@ frames_with_hands = 0
 
 with mp_hands.Hands(
         static_image_mode=True,
-        max_num_hands=MP_MAX_HANDS,
-        min_detection_confidence=MP_MIN_DETECTION_CONF
+        max_num_hands=2,
+        min_detection_confidence=0.4
 ) as hands:
 
     for _, row in df.iterrows():
 
+        # only intervals where hand touches object
         if pd.notna(row["child_in_hand._"]):
 
             subject = row["subject"]
             day = row["day"]
 
-            frames_folder = f"{DATA_ROOT}/{subject}/frames/day{day}"
-            output_folder = f"{DATA_ROOT}/{subject}/hand_frames/day{day}"
+            # dynamic frames folder
+            frames_folder = f"{ROOT}/{subject}/frames/day{day}"
 
-            if not os.path.exists(frames_folder):
-                log.warning("Frames folder missing: %s", frames_folder)
-                continue
-
+            # output folder per subject/day
+            output_folder = f"{ROOT}/{subject}/hand_frames/day{day}"
             os.makedirs(output_folder, exist_ok=True)
 
             for frame_id in range(row["start_frame"], row["end_frame"] + 1):
@@ -79,6 +82,7 @@ with mp_hands.Hands(
                     continue
 
                 rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
                 results = hands.process(rgb)
 
                 frames_checked += 1
@@ -91,6 +95,6 @@ with mp_hands.Hands(
 # RESULTS
 # -----------------------------
 
-log.info("Frames checked: %d", frames_checked)
-log.info("Frames with hands: %d", frames_with_hands)
-log.info("Processing complete!")
+print("Frames checked:", frames_checked)
+print("Frames with hands:", frames_with_hands)
+print("Processing complete!")
