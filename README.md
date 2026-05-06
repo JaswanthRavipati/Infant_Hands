@@ -3,6 +3,8 @@
 A computer vision pipeline for detecting and tracking infant hand-object interactions from video data. Built for CSCI B657 (Computer Vision).
 
 ---
+## Team members:
+Dheeraj Karanam(dhkara), Venkata Sai Jaswanth Ravipati(veravi), Sandra Kettidathil Chandy(saketti)
 
 ## Overview
 
