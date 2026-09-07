@@ -2,14 +2,14 @@
 
 End-to-end computer vision pipeline for **egocentric infant hand detection** and **in-hand object identification** from head-mounted camera footage. Built for CSCI B657 (Computer Vision, Spring 2026) in collaboration with the Department of Psychological & Brain Sciences, Indiana University Bloomington.
 
-**Authors:** Dheeraj Karanam, Venkata Sai Jaswanth Ravipati, Sandra Kettidathil Chandy
+**Authors:** Venkata Sai Jaswanth Ravipati
 **Advisors:** Linda B. Smith, Minju Kim
 
 For the full technical write-up see [REPORT.md](REPORT.md); the conference-style paper is in [paper.tex](paper.tex) / [paper.pdf](paper.pdf).
 
 ---
 ## Team members:
-Dheeraj Karanam(dhkara), Venkata Sai Jaswanth Ravipati(veravi), Sandra Kettidathil Chandy(saketti)
+Venkata Sai Jaswanth Ravipati(veravi)
 
 ## Overview
 
