@@ -5,7 +5,7 @@ End-to-end computer vision pipeline for **egocentric infant hand detection** and
 **Authors:** Venkata Sai Jaswanth Ravipati
 **Advisors:** Linda B. Smith, Minju Kim
 
-For the full technical write-up see [REPORT.md](REPORT.md); the conference-style paper is in [paper.tex](paper.tex) / [paper.pdf](paper.pdf).
+For the full technical write-up and conference-style paper, see [paper.pdf](https://github.com/JaswanthRavipati/Infant_Hands/blob/main/paper.pdf). Supporting materials include the [project poster](https://github.com/JaswanthRavipati/Infant_Hands/blob/main/poster.pdf), [abstract](https://github.com/JaswanthRavipati/Infant_Hands/blob/main/abstract.txt), and [title](https://github.com/JaswanthRavipati/Infant_Hands/blob/main/title.txt).
 
 ---
 ## Team members:
@@ -157,9 +157,10 @@ Infant_hands/
 ├── yolov8m.pt                       # Pretrained YOLOv8m init weights
 ├── yolo26n.pt                       # Alt YOLO weights
 ├── requirements.txt
-├── REPORT.md                        # Full technical report
-├── PAPER.md / paper.tex / paper.pdf # Conference-style paper
-├── references.bib
+├── paper.pdf                       # Full conference-style technical paper
+├── poster.pdf                      # Project poster
+├── abstract.txt                    # Paper abstract
+├── title.txt                       # Paper title
 ├── test_audit.md                    # Bug audit & fix log
 └── README.md
 ```
@@ -217,7 +218,7 @@ pad_h = int(0.6 * h)   # +60% on each side  → ~2.2× height
 
 ## Failed approaches (preserved as ablations)
 
-Both negative results materially shaped the final pipeline. Full diagnostics are in [REPORT.md §5](REPORT.md).
+Both negative results materially shaped the final pipeline. Full diagnostics are in the [conference-style paper](https://github.com/JaswanthRavipati/Infant_Hands/blob/main/paper.pdf).
 
 ### 1. Baby vs. adult hand discrimination by bounding-box geometry
 Five variants tried (single-threshold area, per-frame ratio, aspect ratio, vertical position, skin-tone). **All failed.** Pixel size measures **distance from camera**, not anatomical identity, and the two distributions overlap. Aspect ratio is dominated by grip posture, position by scene composition, skin tone by auto-exposure. The size-thresholding code path is unmaintained in the final pipeline; a SimCLR-pretrained appearance classifier (scaffolding in `scripts/simclr_*.py`) is the planned fix.
