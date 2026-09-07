@@ -1,0 +1,15 @@
+Developmental psychology has traditionally observed infants from external cameras, miss-
+ing the infant’s first-person view of objects and hands during play. Egocentric (head-mounted)
+cameras now make that view recordable, but standard computer vision pipelines fail on this
+footage: hands appear at unpredictable scales, perspective shifts constantly, and scenes are
+cluttered and uncontrolled. We present an end-to-end pipeline for egocentric infant hand
+detection and downstream object–interaction analysis across 23 toy classes. The pipeline
+(i) auto-labels frames with MediaPipe, (ii) corrects labels in CVAT, (iii) fine-tunes a YOLOv8m
+hand detector, and (iv) classifies the held object via DINOv2 prototype matching on a dynamically padded crop around each detected hand. On held-out Day-4 footage from five infants,
+the detector reaches Precision = 0.93, Recall = 0.93, mAP@50 = 0.96, mAP@50–95 = 0.72
+(best mAP@50 = 0.967 at epoch 44). Per-infant interaction distributions are highly statistically
+distinct (Pearson χ2 = 14,877.81, dof = 88, p < 10−3), recovering scientifically interpretable
+behavioural variation. We also report two negative results: (a) attempting to separate infant
+from caregiver hands using bounding-box geometry, and (b) using SAM2 as a standalone object
+proposer. Both failed for structural reasons that we diagnose in detail; the diagnoses motivated
+the final architecture.
